@@ -9,7 +9,12 @@ import {
 import { User } from '../user/user.model';
 import { AuctionItem } from '../auction/auction.model';
 
-@Table({ tableName: 'bids', timestamps: true, updatedAt: false })
+@Table({
+  tableName: 'bids',
+  timestamps: true,
+  updatedAt: false,
+  indexes: [{ fields: ['auctionId'] }],
+})
 export class Bid extends Model {
   @Column({
     type: DataType.UUID,

@@ -17,16 +17,22 @@ export class AuctionExpirationService {
     const expiredAuctions = await this.auctionService.findExpiredActive();
 
     for (const auction of expiredAuctions) {
-      await this.auctionService.markAsEnded(auction.id);
+      try {
+        await this.auctionService.markAsEnded(auction.id);
 
-      this.auctionGateway.broadcastAuctionEnded(auction.id, {
-        auctionId: auction.id,
-        name: auction.name,
-        finalBid: auction.currentHighestBid,
-        winnerId: auction.currentHighestBidderId,
-      });
+        this.auctionGateway.broadcastAuctionEnded(auction.id, {
+          auctionId: auction.id,
+          name: auction.name,
+          finalBid: auction.currentHighestBid,
+          winnerId: auction.currentHighestBidderId,
+        });
 
-      this.logger.log(`Auction "${auction.name}" (${auction.id}) has ended.`);
+        this.logger.log(`Auction "${auction.name}" (${auction.id}) has ended.`);
+      } catch (err) {
+        this.logger.error(
+          `Failed to close auction "${auction.name}" (${auction.id}): ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
     }
 
     if (expiredAuctions.length > 0) {

@@ -51,6 +51,7 @@ export class BidService {
       const auction = await this.auctionModel.findByPk(auctionId, {
         include: [{ model: User, as: 'currentHighestBidder' }],
         transaction,
+        lock: transaction.LOCK.UPDATE,
       });
 
       if (!auction) {

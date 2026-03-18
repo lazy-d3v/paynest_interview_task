@@ -15,7 +15,16 @@ export enum AuctionStatus {
   ENDED = 'ended',
 }
 
-@Table({ tableName: 'auction_items', timestamps: true, version: true })
+@Table({
+  tableName: 'auction_items',
+  timestamps: true,
+  version: true,
+  indexes: [
+    { fields: ['status'] },
+    { fields: ['endTime'] },
+    { fields: ['status', 'endTime'] },
+  ],
+})
 export class AuctionItem extends Model {
   @Column({
     type: DataType.UUID,
