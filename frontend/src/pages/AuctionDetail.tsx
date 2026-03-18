@@ -1,15 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api, type AuctionItem, type Bid } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import CountdownTimer from '../components/CountdownTimer';
 import BidForm from '../components/BidForm';
+
+interface NewBidData {
+  bid: Bid;
+  auction: AuctionItem;
+}
+
+interface AuctionEndedData {
+  auctionId: string;
+}
 
 interface AuctionDetailProps {
   joinAuction: (id: string) => void;
   leaveAuction: (id: string) => void;
-  onNewBid: (callback: (data: any) => void) => (() => void) | undefined;
-  onAuctionEnded: (callback: (data: any) => void) => (() => void) | undefined;
+  onNewBid: (callback: (data: NewBidData) => void) => (() => void) | undefined;
+  onAuctionEnded: (
+    callback: (data: AuctionEndedData) => void,
+  ) => (() => void) | undefined;
 }
 
 export default function AuctionDetail({
@@ -54,7 +65,7 @@ export default function AuctionDetail({
 
   // Listen for real-time bid updates
   useEffect(() => {
-    const cleanup = onNewBid((data: any) => {
+    const cleanup = onNewBid((data: NewBidData) => {
       if (data.auction && data.bid) {
         setAuction(data.auction);
         setBids((prev) => [data.bid, ...prev]);
@@ -65,7 +76,7 @@ export default function AuctionDetail({
 
   // Listen for auction end
   useEffect(() => {
-    const cleanup = onAuctionEnded((data: any) => {
+    const cleanup = onAuctionEnded((data: AuctionEndedData) => {
       if (data.auctionId === id) {
         setAuction((prev) =>
           prev ? { ...prev, status: 'ended' as const } : prev,

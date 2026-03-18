@@ -54,7 +54,7 @@ export class AuctionService {
       status: AuctionStatus.ACTIVE,
       imageUrls: dto.imageUrls || [],
       createdByUserId: userId,
-    } as any);
+    });
 
     // Reload with associations
     return this.findById(auction.id);
@@ -68,14 +68,16 @@ export class AuctionService {
     const auction = await this.findById(id);
 
     if (auction.createdByUserId !== userId) {
-      throw new ForbiddenException('Only the auction creator can edit this auction');
+      throw new ForbiddenException(
+        'Only the auction creator can edit this auction',
+      );
     }
 
     if (auction.status === AuctionStatus.ENDED) {
       throw new BadRequestException('Cannot edit an ended auction');
     }
 
-    const updateData: any = {};
+    const updateData: Partial<AuctionItem> = {};
     if (dto.name !== undefined) updateData.name = dto.name;
     if (dto.description !== undefined) updateData.description = dto.description;
     if (dto.imageUrls !== undefined) updateData.imageUrls = dto.imageUrls;
@@ -83,7 +85,9 @@ export class AuctionService {
     // If duration changes, recalculate endTime
     if (dto.duration !== undefined) {
       updateData.duration = dto.duration;
-      updateData.endTime = new Date(auction.startTime.getTime() + dto.duration * 1000);
+      updateData.endTime = new Date(
+        auction.startTime.getTime() + dto.duration * 1000,
+      );
     }
 
     await auction.update(updateData);
@@ -94,7 +98,9 @@ export class AuctionService {
     const auction = await this.findById(id);
 
     if (auction.createdByUserId !== userId) {
-      throw new ForbiddenException('Only the auction creator can delete this auction');
+      throw new ForbiddenException(
+        'Only the auction creator can delete this auction',
+      );
     }
 
     await auction.destroy();

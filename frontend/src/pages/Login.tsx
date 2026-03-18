@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { api } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -24,8 +24,9 @@ export default function Login() {
       login(data);
       toast.success(`Welcome back, ${data.user.username}!`);
       navigate(from, { replace: true });
-    } catch (err: any) {
-      toast.error(err.message || 'Login failed. Please check your credentials.');
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      toast.error(error.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ export default function Login() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="user@paynest.com"
+            placeholder="Enter your email"
             required
             style={{ width: '100%' }}
           />
@@ -57,7 +58,7 @@ export default function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="password123"
+            placeholder="Enter your password"
             required
             style={{ width: '100%' }}
           />
@@ -71,12 +72,6 @@ export default function Login() {
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
-
-      <div style={{ marginTop: '2rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-        Demo Accounts:<br />
-        <strong style={{ color: 'var(--text-main)' }}>user@paynest.com</strong> / password123<br />
-        <strong style={{ color: 'var(--text-main)' }}>userX@paynest.com</strong> / password123
-      </div>
     </div>
   );
 }

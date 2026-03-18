@@ -1,8 +1,18 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import type { AuctionItem, Bid } from '../services/api';
 
 const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000/auction';
+
+interface NewBidData {
+  bid: Bid;
+  auction: AuctionItem;
+}
+
+interface AuctionEndedData {
+  auctionId: string;
+}
 
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
@@ -40,7 +50,7 @@ export function useSocket() {
   }, []);
 
   const onNewBid = useCallback(
-    (callback: (data: any) => void) => {
+    (callback: (data: NewBidData) => void) => {
       socketRef.current?.on('newBid', callback);
       return () => {
         socketRef.current?.off('newBid', callback);
@@ -50,7 +60,7 @@ export function useSocket() {
   );
 
   const onAuctionEnded = useCallback(
-    (callback: (data: any) => void) => {
+    (callback: (data: AuctionEndedData) => void) => {
       socketRef.current?.on('auctionEnded', callback);
       return () => {
         socketRef.current?.off('auctionEnded', callback);
@@ -60,7 +70,7 @@ export function useSocket() {
   );
 
   const onAuctionCreated = useCallback(
-    (callback: (data: any) => void) => {
+    (callback: (data: AuctionItem) => void) => {
       socketRef.current?.on('auctionCreated', callback);
       return () => {
         socketRef.current?.off('auctionCreated', callback);
@@ -70,7 +80,6 @@ export function useSocket() {
   );
 
   return {
-    socket: socketRef.current,
     isConnected,
     joinAuction,
     leaveAuction,

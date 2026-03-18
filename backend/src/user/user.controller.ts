@@ -4,7 +4,7 @@ import { User } from './user.model';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   async findAll(): Promise<User[]> {

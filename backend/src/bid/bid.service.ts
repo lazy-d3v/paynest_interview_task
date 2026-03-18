@@ -93,7 +93,7 @@ export class BidService {
           amount,
           userId,
           auctionId,
-        } as any,
+        },
         { transaction },
       );
 
@@ -119,13 +119,20 @@ export class BidService {
         ],
       });
 
-      this.logger.log(`Bid placed: $${amount} by user ${userId} on auction ${auctionId}`);
+      this.logger.log(
+        `Bid placed: $${amount} by user ${userId} on auction ${auctionId}`,
+      );
 
       return { bid: updatedBid!, auction: updatedAuction! };
-    } catch (error) {
+    } catch (error: unknown) {
       await transaction.rollback();
 
-      if (error.name === 'SequelizeOptimisticLockError') {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'name' in error &&
+        error.name === 'SequelizeOptimisticLockError'
+      ) {
         throw new ConflictException(
           'Another bid was placed at the same time. Please try again.',
         );

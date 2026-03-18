@@ -12,6 +12,14 @@ import { BidService } from './bid.service';
 import { PlaceBidDto } from './dto/place-bid.dto';
 import { AuctionGateway } from '../gateway/auction.gateway';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Request } from 'express';
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: number;
+    email: string;
+  };
+}
 
 @Controller('auctions/:auctionId/bids')
 export class BidController {
@@ -26,10 +34,14 @@ export class BidController {
   async placeBid(
     @Param('auctionId') auctionId: string,
     @Body() dto: PlaceBidDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     const userId = req.user.id;
-    const result = await this.bidService.placeBid(auctionId, dto.amount, userId);
+    const result = await this.bidService.placeBid(
+      auctionId,
+      dto.amount,
+      userId,
+    );
 
     // Broadcast the new bid to all clients in this auction room
     this.auctionGateway.broadcastNewBid(auctionId, {

@@ -6,13 +6,13 @@ interface CountdownTimerProps {
 }
 
 export default function CountdownTimer({ endTime, status }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState('');
-  const [urgency, setUrgency] = useState<'normal' | 'warning' | 'urgent' | 'ended'>('normal');
+  const [timeLeft, setTimeLeft] = useState(() => (status === 'ended' ? 'Ended' : ''));
+  const [urgency, setUrgency] = useState<'normal' | 'warning' | 'urgent' | 'ended'>(() =>
+    status === 'ended' ? 'ended' : 'normal',
+  );
 
   useEffect(() => {
     if (status === 'ended') {
-      setTimeLeft('Ended');
-      setUrgency('ended');
       return;
     }
 

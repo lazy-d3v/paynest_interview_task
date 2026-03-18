@@ -9,9 +9,6 @@ import { GatewayModule } from './gateway/gateway.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import * as fs from 'fs';
-import * as path from 'path';
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -23,7 +20,11 @@ import * as path from 'path';
         const dbUrl = configService.get<string>('DATABASE_URL');
         const useSSL = configService.get<string>('DB_SSL', 'true') === 'true';
 
-        let host: string, port: number, username: string, password: string, database: string;
+        let host: string,
+          port: number,
+          username: string,
+          password: string,
+          database: string;
 
         if (dbUrl) {
           const cleanUrl = dbUrl.replace(/^['"]|['"]$/g, '');
@@ -41,13 +42,15 @@ import * as path from 'path';
           database = configService.get<string>('DB_DATABASE')!;
         }
 
-        console.log(`Connecting to database: ${host}:${port}/${database} (SSL: ${useSSL})`);
+        console.log(
+          `Connecting to database: ${host}:${port}/${database} (SSL: ${useSSL})`,
+        );
 
         // Build SSL config conditionally
-        const dialectOptions: any = {};
+        const dialectOptions: { ssl?: { rejectUnauthorized: boolean } } = {};
         if (useSSL) {
           dialectOptions.ssl = {
-            rejectUnauthorized: false
+            rejectUnauthorized: false,
           };
         }
 
@@ -85,10 +88,12 @@ import * as path from 'path';
     AuctionModule,
     BidModule,
 
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 60,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 60,
+      },
+    ]),
   ],
   providers: [
     {
@@ -97,4 +102,4 @@ import * as path from 'path';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

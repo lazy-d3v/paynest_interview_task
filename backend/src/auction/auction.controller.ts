@@ -13,13 +13,21 @@ import {
   Res,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { AuctionService } from './auction.service';
 import { AuctionImageService } from './auction-image.service';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { AuctionItem } from './auction.model';
 import { AuctionGateway } from '../gateway/auction.gateway';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AxiosResponse } from 'axios';
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: number;
+    email: string;
+  };
+}
 
 @Controller('auctions')
 export class AuctionController {
@@ -34,7 +42,7 @@ export class AuctionController {
   @UseInterceptors(FilesInterceptor('images', 3))
   async create(
     @Body() dto: CreateAuctionDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<AuctionItem> {
     const imageUrls: string[] = [];
@@ -45,7 +53,10 @@ export class AuctionController {
       }
     }
 
-    const auction = await this.auctionService.create({ ...dto, imageUrls }, req.user.id);
+    const auction = await this.auctionService.create(
+      { ...dto, imageUrls },
+      req.user.id,
+    );
     this.auctionGateway.broadcastAuctionCreated(auction);
     return auction;
   }
@@ -72,9 +83,17 @@ export class AuctionController {
       return res.status(404).send('Image not found');
     }
 
-    const streamResponse = await this.auctionImageService.streamImage(imageUrl);
-    res.set('Content-Type', streamResponse.headers['content-type']);
-    streamResponse.data.pipe(res);
+    const streamResponse = (await this.auctionImageService.streamImage(
+      imageUrl,
+    )) as AxiosResponse;
+    const contentType = streamResponse.headers['content-type'] as
+      | string
+      | undefined;
+    if (contentType) {
+      res.set('Content-Type', contentType);
+    }
+    const data = streamResponse.data as { pipe: (res: Response) => void };
+    data.pipe(res);
   }
 
   @Put(':id')
@@ -83,26 +102,33 @@ export class AuctionController {
   async update(
     @Param('id') id: string,
     @Body() dto: Partial<CreateAuctionDto>,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<AuctionItem> {
     let imageUrls: string[] | undefined = undefined;
     if (files && files.length > 0) {
       imageUrls = [];
       for (const file of files) {
-        const url = await this.auctionImageService.uploadImage(file, dto.name || 'item');
+        const url = await this.auctionImageService.uploadImage(
+          file,
+          dto.name || 'item',
+        );
         imageUrls.push(url);
       }
     }
 
-    return this.auctionService.update(id, { ...dto, imageUrls } as any, req.user.id);
+    return this.auctionService.update(
+      id,
+      { ...dto, imageUrls } as Partial<CreateAuctionDto>,
+      req.user.id,
+    );
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   async delete(
     @Param('id') id: string,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ): Promise<{ message: string }> {
     await this.auctionService.delete(id, req.user.id);
     return { message: 'Auction deleted successfully' };

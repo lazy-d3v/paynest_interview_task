@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { api } from '../services/api';
+import { api, type AuctionItem } from '../services/api';
 import { compressImage } from '../utils/image-utils';
 
 interface CreateAuctionFormProps {
   onCreated: () => void;
-  initialData?: any;
+  initialData?: AuctionItem | null;
   onCancel?: () => void;
 }
 
@@ -62,7 +62,7 @@ export default function CreateAuctionForm({ onCreated, initialData, onCancel }: 
         formData.append('duration', duration);
       }
       
-      images.forEach((image) => {
+      images.forEach((image: File) => {
         formData.append('images', image);
       });
 
@@ -83,8 +83,11 @@ export default function CreateAuctionForm({ onCreated, initialData, onCancel }: 
         setPreviews([]);
       }
       onCreated();
-    } catch (err: any) {
-      toast.error(err.message || `Failed to ${isEdit ? 'update' : 'create'} auction`);
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      toast.error(
+        error.message || `Failed to ${isEdit ? 'update' : 'create'} auction`,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -178,7 +181,7 @@ export default function CreateAuctionForm({ onCreated, initialData, onCancel }: 
               </label>
 
               <div className="preview-gallery">
-                {previews.map((src, idx) => (
+                {previews.map((src: string, idx: number) => (
                   <div key={idx} className="preview-item">
                     <img src={src} alt="Preview" />
                     <button type="button" onClick={() => removeImage(idx)} className="remove-preview">×</button>

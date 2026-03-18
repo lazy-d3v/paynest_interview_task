@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useSocket } from './hooks/useSocket';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthProvider';
+import { useAuth } from './hooks/useAuth';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import AuctionDetail from './pages/AuctionDetail';

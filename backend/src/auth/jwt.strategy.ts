@@ -10,11 +10,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET', 'paynest-bidding-secret-key-2024'),
+      secretOrKey: configService.get<string>(
+        'JWT_SECRET',
+        'paynest-bidding-secret-key-2024',
+      ),
     });
   }
 
-  async validate(payload: JwtPayload) {
+  validate(payload: JwtPayload) {
     return {
       id: payload.sub,
       email: payload.email,

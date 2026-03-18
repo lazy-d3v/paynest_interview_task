@@ -43,7 +43,10 @@ export class UserSeedService implements OnApplicationBootstrap {
       // Ensure unique username
       do {
         username = faker.internet
-          .username({ firstName: faker.person.firstName(), lastName: faker.person.lastName() })
+          .username({
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
+          })
           .toLowerCase()
           .replace(/[^a-z0-9_]/g, '_')
           .slice(0, 20);

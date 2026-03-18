@@ -22,12 +22,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message =
         typeof exceptionResponse === 'string'
           ? exceptionResponse
-          : exceptionResponse;
+          : (exceptionResponse as { message?: string }).message ||
+            'Internal server error';
     }
 
     response.status(status).json({
       statusCode: status,
-      message: typeof message === 'object' ? (message as any).message || message : message,
+      message,
       timestamp: new Date().toISOString(),
     });
   }

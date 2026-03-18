@@ -26,10 +26,10 @@ export class UserService {
   }
 
   async create(user: Partial<User>): Promise<User> {
-    return this.userModel.create(user as any);
+    return this.userModel.create(user);
   }
 
-  async bulkCreate(users: any[]): Promise<User[]> {
+  async bulkCreate(users: Partial<User>[]): Promise<User[]> {
     return this.userModel.bulkCreate(users);
   }
 }

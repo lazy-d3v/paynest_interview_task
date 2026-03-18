@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { api, type AuctionItem } from '../services/api';
 import AuctionCard from '../components/AuctionCard';
 import CreateAuctionForm from '../components/CreateAuctionForm';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 interface DashboardProps {
@@ -52,8 +52,9 @@ export default function Dashboard({ onAuctionCreated, externalAuctions }: Dashbo
       await api.deleteAuction(id);
       toast.success('Auction deleted');
       fetchAuctions();
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to delete auction');
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      toast.error(error.message || 'Failed to delete auction');
     }
   };
 

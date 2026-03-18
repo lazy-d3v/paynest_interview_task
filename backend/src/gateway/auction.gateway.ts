@@ -33,21 +33,21 @@ export class AuctionGateway
   }
 
   @SubscribeMessage('joinAuction')
-  handleJoinAuction(
+  async handleJoinAuction(
     @ConnectedSocket() client: Socket,
     @MessageBody() auctionId: string,
   ) {
-    client.join(`auction-${auctionId}`);
+    await client.join(`auction-${auctionId}`);
     this.logger.log(`Client ${client.id} joined auction room: ${auctionId}`);
     return { event: 'joinedAuction', data: auctionId };
   }
 
   @SubscribeMessage('leaveAuction')
-  handleLeaveAuction(
+  async handleLeaveAuction(
     @ConnectedSocket() client: Socket,
     @MessageBody() auctionId: string,
   ) {
-    client.leave(`auction-${auctionId}`);
+    await client.leave(`auction-${auctionId}`);
     this.logger.log(`Client ${client.id} left auction room: ${auctionId}`);
     return { event: 'leftAuction', data: auctionId };
   }

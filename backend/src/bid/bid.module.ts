@@ -7,9 +7,7 @@ import { BidService } from './bid.service';
 import { BidController } from './bid.controller';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([Bid, AuctionItem, User]),
-  ],
+  imports: [SequelizeModule.forFeature([Bid, AuctionItem, User])],
   controllers: [BidController],
   providers: [BidService],
   exports: [BidService],

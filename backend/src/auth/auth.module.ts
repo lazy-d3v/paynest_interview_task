@@ -15,7 +15,10 @@ import { UserModule } from '../user/user.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET', 'paynest-bidding-secret-key-2024'),
+        secret: configService.get<string>(
+          'JWT_SECRET',
+          'paynest-bidding-secret-key-2024',
+        ),
         signOptions: { expiresIn: '24h' },
       }),
     }),
