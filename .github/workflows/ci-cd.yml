@@ -32,6 +32,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Test
+        run: npm run test
+
   frontend-build:
     name: Frontend — Build
     runs-on: ubuntu-latest
@@ -88,6 +91,7 @@ jobs:
     steps:
       - name: Trigger Dokploy Redeploy
         run: |
-          curl -X POST "${{ secrets.DOKPLOY_COMPOSE_WEBHOOK }}?branch=main" \
+          curl -X POST "${{ secrets.DOKPLOY_COMPOSE_WEBHOOK }}" \
+               -H "X-GitHub-Event: push" \
                -H "Content-Type: application/json" \
-               -d '{"ref": "refs/heads/main", "branch": "main"}'
+               -d '{"ref": "refs/heads/main"}'

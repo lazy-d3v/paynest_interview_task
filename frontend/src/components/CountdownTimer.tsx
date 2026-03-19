@@ -57,7 +57,7 @@ export default function CountdownTimer({ endTime, status }: CountdownTimerProps)
 
   return (
     <div className={`countdown ${urgency}`}>
-      🕐 {timeLeft}
+      {timeLeft}
     </div>
   );
 }

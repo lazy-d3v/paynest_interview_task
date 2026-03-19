@@ -1,3 +1,9 @@
+# Deployment Webhook (Dokploy):
+# curl -X POST "<YOUR-DOKPLOY-WEBHOOK-URL>" \
+#   -H "X-GitHub-Event: push" \
+#   -H "Content-Type: application/json" \
+#   -d '{"ref": "refs/heads/main"}'
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -53,9 +59,6 @@ services:
     restart: unless-stopped
     networks:
       - app-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.backend.loadbalancer.server.port=3000"
 
   frontend:
     build:
@@ -71,6 +74,9 @@ services:
     restart: unless-stopped
     networks:
       - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
 
 networks:
   app-network:

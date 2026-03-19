@@ -13,7 +13,12 @@ export default function CreateAuctionForm({ onCreated, initialData, onCancel }: 
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [startingPrice, setStartingPrice] = useState(initialData?.startingPrice?.toString() || '');
-  const [duration, setDuration] = useState(initialData?.duration?.toString() || '300');
+  const getDefaultDateTime = () => {
+    const d = new Date();
+    d.setHours(d.getHours() + 1);
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  };
+  const [endDate, setEndDate] = useState(getDefaultDateTime());
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +64,13 @@ export default function CreateAuctionForm({ onCreated, initialData, onCancel }: 
       formData.append('description', description.trim());
       formData.append('startingPrice', startingPrice);
       if (!isEdit) {
-        formData.append('duration', duration);
+        const durationInSeconds = Math.floor((new Date(endDate).getTime() - Date.now()) / 1000);
+        if (durationInSeconds < 60) {
+          toast.error('End time must be at least 1 minute in the future');
+          setIsSubmitting(false);
+          return;
+        }
+        formData.append('duration', durationInSeconds.toString());
       }
       
       images.forEach((image: File) => {
@@ -78,7 +89,7 @@ export default function CreateAuctionForm({ onCreated, initialData, onCancel }: 
         setName('');
         setDescription('');
         setStartingPrice('');
-        setDuration('300');
+        setEndDate(getDefaultDateTime());
         setImages([]);
         setPreviews([]);
       }
@@ -134,17 +145,16 @@ export default function CreateAuctionForm({ onCreated, initialData, onCancel }: 
 
           {!isEdit && (
             <div className="form-group">
-              <label className="form-label" htmlFor="duration">
-                Duration (seconds) *
+              <label className="form-label" htmlFor="endDate">
+                Auction End Date & Time *
               </label>
               <input
-                id="duration"
+                id="endDate"
                 className="form-input"
-                type="number"
-                min="60"
-                placeholder="300"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                type="datetime-local"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)}
                 required
               />
             </div>

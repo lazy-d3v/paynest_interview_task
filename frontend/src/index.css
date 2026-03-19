@@ -452,7 +452,6 @@ body {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.9rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -466,7 +465,7 @@ body {
   color: var(--accent-warning);
 }
 
-.countdown.normal {
+.countdown.normal:not(.hero-stat-value .countdown) {
   color: var(--accent-success);
 }
 

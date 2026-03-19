@@ -169,7 +169,7 @@ export default function AuctionDetail({
               </div>
               <div className="hero-stat">
                 <span className="hero-stat-label">Time Left</span>
-                <span className="hero-stat-value" style={{ fontSize: '1.5rem' }}>
+                <span className="hero-stat-value">
                   <CountdownTimer endTime={auction.endTime} status={auction.status} />
                 </span>
               </div>
@@ -258,11 +258,11 @@ export default function AuctionDetail({
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Start Time</span>
-                <span>{new Date(auction.startTime).toLocaleTimeString()}</span>
+                <span>{new Date(auction.startTime).toLocaleString()}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>End Time</span>
-                <span>{new Date(auction.endTime).toLocaleTimeString()}</span>
+                <span>{new Date(auction.endTime).toLocaleString()}</span>
               </div>
               {auction.currentHighestBidder && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
