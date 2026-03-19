@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
+    pull_policy: always
     container_name: paynest-db
     environment:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
