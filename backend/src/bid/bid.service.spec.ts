@@ -5,7 +5,7 @@ import { Bid } from './bid.model';
 import { AuctionItem, AuctionStatus } from '../auction/auction.model';
 import { User } from '../user/user.model';
 import { Sequelize } from 'sequelize-typescript';
-import { NotFoundException, BadRequestException, ForbiddenException, ConflictException } from '@nestjs/common';
+import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 
 describe('BidService', () => {
   let service: BidService;
