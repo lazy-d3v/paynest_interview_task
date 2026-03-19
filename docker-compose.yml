@@ -62,11 +62,7 @@ services:
         VITE_SOCKET_URL: ${VITE_SOCKET_URL:-http://localhost:9000/auction}
     container_name: paynest-web
     ports:
-      - '${FRONTEND_PORT_EXTERNAL:-9001}:8080'
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+      - '${FRONTEND_PORT_EXTERNAL:-9001}:80'
     depends_on:
       - backend
     restart: unless-stopped
