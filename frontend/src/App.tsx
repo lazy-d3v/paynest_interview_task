@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useSocket } from './hooks/useSocket';
 import { AuthProvider } from './context/AuthProvider';
@@ -44,7 +44,7 @@ function AppRoutes() {
 
       {/* Protected Routes inside Layout */}
       <Route element={<ProtectedRoute />}>
-        <Route element={<Layout isConnected={isConnected} />}>
+        <Route element={<Layout isConnected={isConnected}><Outlet /></Layout>}>
           <Route path="/" element={<Dashboard />} />
           <Route
             path="/auction/:id"

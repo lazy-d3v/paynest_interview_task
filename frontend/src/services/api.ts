@@ -87,6 +87,13 @@ export const api = {
       body: JSON.stringify(data),
     }).then((r) => handleResponse<LoginResponse>(r)),
 
+  register: (data: { username: string; email: string; password: string }): Promise<LoginResponse> =>
+    fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).then((r) => handleResponse<LoginResponse>(r)),
+
   // Users
   getUsers: (): Promise<User[]> =>
     fetch(`${API_BASE}/users`, getOptions()).then((r) => handleResponse<User[]>(r)),

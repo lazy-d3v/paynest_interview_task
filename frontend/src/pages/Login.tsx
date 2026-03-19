@@ -3,6 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { api } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
+import { Lock, ArrowRight } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -26,52 +31,76 @@ export default function Login() {
       navigate(from, { replace: true });
     } catch (err: unknown) {
       const error = err as { message?: string };
-      toast.error(error.message || 'Login failed. Please check your credentials.');
+      toast.error(error.message || 'Access denied. Verify your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="empty-state" style={{ maxWidth: '400px', margin: '4rem auto' }}>
-      <div className="empty-state-icon">🔐</div>
-      <div className="empty-state-title">Sign In</div>
-      <p style={{ marginBottom: '2rem' }}>Sign in to participate in live auctions</p>
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+      <div className="w-full max-w-[440px] space-y-12">
+        {/* Branding/Header Section */}
+        <div className="flex flex-col items-center text-center space-y-4">
+          <div className="h-16 w-16 bg-white text-black flex items-center justify-center mb-2 shadow-[0_0_40px_rgba(255,255,255,0.15)]">
+            <Lock className="h-8 w-8" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-4xl font-black tracking-[0.2em] uppercase glow-text">Access Club</h1>
+            <p className="text-xs font-bold text-zinc-400 tracking-[0.3em] uppercase">Authorized Personnel Only</p>
+          </div>
+        </div>
 
-      <form onSubmit={handleSubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div style={{ textAlign: 'left' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Email</label>
-          <input
-            className="form-input"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            required
-            style={{ width: '100%' }}
-          />
-        </div>
-        <div style={{ textAlign: 'left' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Password</label>
-          <input
-            className="form-input"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            required
-            style={{ width: '100%' }}
-          />
-        </div>
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={loading || !email || !password}
-          style={{ width: '100%', marginTop: '1rem' }}
-        >
-          {loading ? 'Signing in...' : 'Sign In'}
-        </button>
-      </form>
+        <Card className="border-zinc-800 bg-zinc-950/20 backdrop-blur-md border-x-0 sm:border-x rounded-none shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-500 to-transparent opacity-30" />
+          
+          <form onSubmit={handleSubmit}>
+            <CardContent className="p-8 sm:p-10 space-y-8">
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <Label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-zinc-300">Collector Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="IDENTIFIER@DOMAIN.COM"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-12 bg-zinc-900/30 border-zinc-800 rounded-none text-white placeholder:text-zinc-700 focus-visible:ring-zinc-600 font-mono text-xs tracking-wider"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-xs font-black uppercase tracking-[0.2em] text-zinc-300">Security Key</Label>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="h-12 bg-zinc-900/30 border-zinc-800 rounded-none text-white focus-visible:ring-zinc-600 tracking-[0.5em]"
+                  />
+                </div>
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full h-14 bg-white text-black hover:bg-zinc-200 transition-all duration-300 font-black text-xs uppercase tracking-[0.3em] rounded-none group"
+                disabled={loading || !email || !password}
+              >
+                {loading ? 'Processing...' : (
+                  <span className="flex items-center gap-2">
+                    Enter Vault <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                )}
+              </Button>
+            </CardContent>
+          </form>
+        </Card>
+
+      </div>
     </div>
   );
 }
