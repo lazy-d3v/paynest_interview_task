@@ -5,7 +5,11 @@ import { Bid } from './bid.model';
 import { AuctionItem, AuctionStatus } from '../auction/auction.model';
 import { User } from '../user/user.model';
 import { Sequelize } from 'sequelize-typescript';
-import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 
 describe('BidService', () => {
   let service: BidService;
@@ -69,7 +73,9 @@ describe('BidService', () => {
   describe('placeBid', () => {
     it('should throw NotFoundException if user not found', async () => {
       mockUserModel.findByPk.mockResolvedValue(null);
-      await expect(service.placeBid('auction-id', 100, 1)).rejects.toThrow(NotFoundException);
+      await expect(service.placeBid('auction-id', 100, 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw ForbiddenException if user bids on their own auction', async () => {
@@ -80,7 +86,9 @@ describe('BidService', () => {
         update: jest.fn(),
       });
 
-      await expect(service.placeBid('auction-id', 100, 1)).rejects.toThrow(ForbiddenException);
+      await expect(service.placeBid('auction-id', 100, 1)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should throw BadRequestException for expired auction', async () => {
@@ -93,12 +101,14 @@ describe('BidService', () => {
         update: jest.fn(),
       });
 
-      await expect(service.placeBid('auction-id', 100, 2)).rejects.toThrow(BadRequestException);
+      await expect(service.placeBid('auction-id', 100, 2)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should place a bid successfully', async () => {
       mockUserModel.findByPk.mockResolvedValue({ id: 2 });
-      
+
       const mockAuction = {
         id: 'auction-id',
         createdByUserId: 1,
@@ -109,26 +119,27 @@ describe('BidService', () => {
         currentHighestBidderId: 3,
         update: jest.fn(),
       };
-      
+
       mockBidModel.create.mockResolvedValue({ id: 'bid-id' });
       mockBidModel.findByPk.mockResolvedValue({ id: 'bid-id', amount: 100 });
-      
+
       mockAuctionModel.findByPk
         .mockResolvedValueOnce(mockAuction) // First call: fetch auction to check rules
-        .mockResolvedValueOnce({            // Second call: reload updated auction
+        .mockResolvedValueOnce({
+          // Second call: reload updated auction
           ...mockAuction,
           currentHighestBid: 100,
           currentHighestBidderId: 2,
         });
 
       const result = await service.placeBid('auction-id', 100, 2);
-      
+
       expect(result).toBeDefined();
       expect(result.bid.amount).toBe(100);
       expect(mockBidModel.create).toHaveBeenCalled();
       expect(mockAuction.update).toHaveBeenCalledWith(
         { currentHighestBid: 100, currentHighestBidderId: 2 },
-        expect.any(Object)
+        expect.any(Object),
       );
     });
   });
