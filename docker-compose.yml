@@ -1,16 +1,13 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:17-alpine
-    pull_policy: always
     container_name: paynest-db
     environment:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       POSTGRES_DB: ${DB_DATABASE:-paynest_bidding}
     ports:
-      - '9002:5432'
+      - '${DB_PORT_EXTERNAL:-9002}:5432'
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -31,20 +28,22 @@ services:
     build: ./backend
     container_name: paynest-api
     ports:
-      - '9000:3000'
+      - '${PORT_EXTERNAL:-9000}:${PORT:-3000}'
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
     environment:
       DB_HOST: ${DB_HOST:-postgres}
-      DB_PORT: ${DB_PORT:-5432}
+      DB_PORT: ${DB_PORT_INTERNAL:-5432}
       DB_USERNAME: ${DB_USERNAME:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_DATABASE: ${DB_DATABASE:-paynest_bidding}
       DATABASE_URL: ${DATABASE_URL:-postgres://${DB_USERNAME:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_DATABASE:-paynest_bidding}}
       DB_SSL: ${DB_SSL:-false}
-      PORT: 3000
+      PORT: ${PORT:-3000}
+      JWT_SECRET: ${JWT_SECRET}
+      IMGBB_API_KEY: ${IMGBB_API_KEY}
     depends_on:
       postgres:
         condition: service_healthy
@@ -58,7 +57,7 @@ services:
         VITE_SOCKET_URL: ${VITE_SOCKET_URL:-http://localhost:9000/auction}
     container_name: paynest-web
     ports:
-      - '9001:8080'
+      - '${FRONTEND_PORT_EXTERNAL:-9001}:8080'
     security_opt:
       - no-new-privileges:true
     cap_drop:
