@@ -16,6 +16,7 @@ services:
       - CHOWN
       - SETGID
       - SETUID
+      - DAC_OVERRIDE
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
