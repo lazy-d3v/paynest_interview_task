@@ -36,7 +36,7 @@ A full-stack real-time auction platform built with **NestJS**, **React**, **Type
 ### Option 1: Docker Compose (Recommended)
 
 ```bash
-docker-compose up --build
+docker compose up --build --force-recreate
 ```
 
 - Frontend: http://localhost:8080
@@ -59,6 +59,15 @@ npm run start:dev
 cd frontend
 npm install
 npm run dev
+```
+
+### 🧹 Cleanup & Fresh Start
+
+To completely remove all containers and volumes for a clean state:
+
+```bash
+docker compose down -v
+docker compose up --build --force-recreate
 ```
 
 ## 📡 API Endpoints

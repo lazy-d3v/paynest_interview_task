@@ -54,6 +54,13 @@ async function handleResponse<T>(res: Response): Promise<T> {
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
+    console.error('API Error:', {
+      status: res.status,
+      statusText: res.statusText,
+      url: res.url,
+      message: data.message || 'Something went wrong',
+      data
+    });
     throw new Error(data.message || 'Something went wrong');
   }
   return data;
